@@ -1,75 +1,77 @@
 ---
 name: scopus-search
-description: 使用 Scopus API 搜索学术文献、期刊、作者或 DOI。当用户需要查找学术论文、在 Scopus 上进行文献检索，或需要导出文献的 CSV/RIS 格式时，请立刻并始终触发此技能。支持包含复杂布尔查询、分页和自动导出的命令行工具。
+description: Search academic literature, journals, authors, or DOIs using the Scopus API. Always trigger this skill when the user needs to find academic papers, conduct literature searches on Scopus, or export literature references in CSV/RIS format. Supports complex boolean queries, pagination, and automated data export via a CLI tool.
 ---
 
-# Scopus Literature Search (Scopus 文献搜索技能)
+# Scopus Literature Search Skill
 
-通过此技能，你可以代表用户使用基于 Elsevier Scopus API 的内置 Python 命令行工具进行文献和学术资料搜索。所有资源已打包在 `scripts/` 目录中。
+[English](SKILL.md) | [中文](SKILL_zh.md)
 
-## 运行环境准备
+Through this skill, you can use the built-in Python command-line tool based on the Elsevier Scopus API to perform literature and academic resource searches on behalf of the user. All resources are bundled in the `scripts/` directory.
 
-在开始 any 搜索之前，确认你的工作路径下有正确的依赖：
-1. 始终优先在包含本工具的目录下运行命令（或者在终端以该目录为当前目录）。
-2. 在此工具第一次使用时，确保用户有包含 `SCOPUS_API_KEY=xxx` 的 `scripts/.env`。没有时请向用户询问或者提醒他们创建。
-3. 提示：该工具默认运行环境为已包含必要依赖的 `uv venv` 环境下，可以通过 `uv run scripts/main.py` 直接执行。
+## Runtime Environment Preparation
 
-## 使用方法 (Usage)
+Before starting any searches, ensure you have the correct dependencies in your working directory:
+1. Always prioritize running commands in the directory containing this tool (or set the terminal's current directory to it).
+2. Upon first use, ensure the user has a `scripts/.env` file containing `SCOPUS_API_KEY=xxx`. If missing, ask the user or remind them to create it.
+3. Tip: The default runtime environment for this tool is under the `uv venv` which already contains necessary dependencies. You can execute commands directly via `uv run scripts/main.py`.
 
-注意：所有的命令必须使用 `uv run scripts/main.py` 作为前缀在 PowerShell 中执行。
+## Usage
 
-### 1. 基础搜索
+Note: All commands MUST be prefixed with `uv run scripts/main.py` and executed in PowerShell.
 
-- 单个或常规组合词 (搜索标题、摘要和关键词)：
+### 1. Basic Search
+
+- Single or regular combined terms (Searches title, abstract, and keywords):
   ```powershell
   uv run scripts/main.py search "machine learning"
   uv run scripts/main.py search '"machine learning" AND PINN'
   ```
-- 按照作者搜索：
+- Search by author:
   ```powershell
   uv run scripts/main.py search --author "Smith, J."
   ```
-- 按照 DOI 搜索：
+- Search by DOI:
   ```powershell
   uv run scripts/main.py search --doi "10.1016/j.example.2024.01.001"
   ```
 
-### 2. 高级逻辑组合搜索
+### 2. Advanced Logical Search
 
-Scopus 支持高级布尔查询语法。
-- 支持检索字段：`TITLE-ABS-KEY(term)`、`AUTH(name)`、`DOI(doi)`、`TITLE(term)`、`ABS(term)`、`KEY(term)`、`PUBYEAR > 2020` 等。
-- 支持逻辑符：`AND`, `OR`, `AND NOT`
+Scopus supports advanced boolean query syntax.
+- Supported search fields: `TITLE-ABS-KEY(term)`, `AUTH(name)`, `DOI(doi)`, `TITLE(term)`, `ABS(term)`, `KEY(term)`, `PUBYEAR > 2020`, etc.
+- Logical operators: `AND`, `OR`, `AND NOT`
 
-**用例**：
+**Use Case**:
 ```powershell
 uv run scripts/main.py search "TITLE-ABS-KEY(deep learning) AND PUBYEAR > 2020"
 ```
-*(注意包裹整个短语的双引号)*
+*(Note the double quotes wrapping the entire phrase)*
 
-### 3. 数据导出和大规模获取
+### 3. Data Export and Large-Scale Retrieval
 
-该工具具有优秀的数据格式导出（支持 RIS 以及 CSV）以及自动翻页能力（能绕过单页获取不超过 100 篇文献的限制）：
-- 终端详细结果表格导出为可以导入 EndNote/Zotero 的 RIS 格式：
+This tool features excellent data format export (supporting RIS and CSV) and automatic pagination handling (bypassing the single-page limit of 100 papers):
+- Export terminal detailed results table to RIS format, which can be imported into EndNote/Zotero:
   ```powershell
   uv run scripts/main.py search "TITLE(neural network)" --format ris --output refs.ris
   ```
-- 将摘要（COMPLETE view）一并保存为 CSV：
+- Save abstracts (`COMPLETE` view) to CSV:
   ```powershell
   uv run scripts/main.py search --keyword "quantum computing" --view COMPLETE --format csv --output results.csv
   ```
-- 获取最新的 150 篇关于大语言模型的文献（触发自动翻页拉取，按时间降序）：
+- Fetch the latest 150 papers on large language models (triggers auto-pagination, descending by date):
   ```powershell
   uv run scripts/main.py search --keyword "large language model" --sort "-date" --max-results 150
   ```
 
-### 参数提醒与默认值
-- `query`：无前缀则默认为 `TITLE-ABS-KEY` 全文匹配。
-- `--sort`, `-s`：默认为 `-date`（按日期降序），也可设置为升降序如 `+citedby-count`（按被引用量升序排）。
-- `--view`, `-v`：默认 `STANDARD`。需拉取摘要，加上 `--view COMPLETE`。
+### Parameter Reminders and Defaults
+- `query`: No prefix defaults to `TITLE-ABS-KEY` full-text match.
+- `--sort`, `-s`: Defaults to `-date` (descending by date). Can also be ascending, e.g., `+citedby-count` (ascending by citation count).
+- `--view`, `-v`: Defaults to `STANDARD`. To fetch abstracts, add `--view COMPLETE`.
 
-## Agent 工作流建议
+## Agent Workflow Suggestions
 
-如果用户请求进行文献搜索：
-1. 分析他们提供的关键词/要求，构造一条合适的 `main.py search` 指令。
-2. 运行检索，检查终端的前 10 名输出摘要和数量。
-3. 帮助他们读取、解读搜索的结果或者总结导出的文件中的论文概述。
+If the user requests a literature search:
+1. Analyze the keywords/requirements they provide and construct an appropriate `main.py search` command.
+2. Run the search, and examine the top 10 output abstracts and total count in the terminal.
+3. Help them read and interpret the search results, or summarize the paper overviews in the exported files.
