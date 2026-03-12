@@ -2,6 +2,8 @@
 
 import argparse
 import sys
+import re
+from datetime import datetime
 
 from config import (
     SCOPUS_API_KEY, DEFAULT_COUNT, DEFAULT_VIEW, 
@@ -23,7 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
   %(prog)s search --author "Smith, J."
   %(prog)s search --doi "10.1016/j.example.2024.01.001"
   %(prog)s search --keyword "neural network" --sort "-date" --count 10
-  %(prog)s search --keyword "quantum computing" --format ris --output refs.ris
+  %(prog)s search --keyword "quantum computing" --format json --output refs.json
 
 搜索语法 (Boolean 查询) / Search Syntax (Boolean Query):
   TITLE-ABS-KEY(term)  — 搜索标题、摘要和关键词 / Search title, abstract & keywords
@@ -91,12 +93,12 @@ def build_parser() -> argparse.ArgumentParser:
     output_group = search_parser.add_argument_group("输出选项 / Output Options")
     output_group.add_argument(
         "--format", "-f", dest="output_format", default=DEFAULT_FORMAT,
-        choices=["auto", "table", "detail", "csv", "ris"],
-        help=f"输出格式 (默认 {DEFAULT_FORMAT}: 终端预览前10条并输出 RIS 文件) / Output format (default {DEFAULT_FORMAT}: preview table + RIS file)",
+        choices=["auto", "table", "detail", "csv", "ris", "json"],
+        help=f"输出格式 (默认 {DEFAULT_FORMAT}: 终端预览前10条并输出 JSON 文件) / Output format (default {DEFAULT_FORMAT}: preview table + JSON file)",
     )
     output_group.add_argument(
         "--output", "-o", default=None,
-        help="导出到文件 (如 results.csv, refs.ris，默认 results.ris) / Export to file",
+        help="导出到文件 (默认会使用 搜索词_日期.json) / Export to file",
     )
 
     return parser
@@ -115,20 +117,35 @@ def run_search(args):
     }
 
     # 确定搜索方式 / Determine search method
+    file_keyword_raw = "results"
     if args.keyword:
         query = f"TITLE-ABS-KEY({args.keyword})"
+        file_keyword_raw = args.keyword
     elif args.author:
         query = f"AUTH({args.author})"
+        file_keyword_raw = args.author
     elif args.doi:
         query = f'DOI("{args.doi}")'
+        file_keyword_raw = args.doi.replace("/", "_")
     elif args.query:
         if "(" in args.query and ")" in args.query:
             query = args.query
         else:
             query = f"TITLE-ABS-KEY({args.query})"
+        file_keyword_raw = args.query
     else:
         print("错误 / Error: 请提供搜索查询。使用 --help 查看用法。 / Please provide a search query. Use --help for usage.", file=sys.stderr)
         sys.exit(1)
+
+    # 生成默认文件名 / Generate default file name
+    safe_keyword = re.sub(r'[^\w\u4e00-\u9fa5]+', '_', file_keyword_raw).strip('_')
+    if len(safe_keyword) > 50:
+        safe_keyword = safe_keyword[:50].strip('_')
+    if not safe_keyword:
+        safe_keyword = "results"
+    
+    today_str = datetime.now().strftime("%Y%m%d")
+    default_out_file = f"{safe_keyword}_{today_str}.json"
 
     print(f"正在搜索 / Searching: {query}")
     print(f"视图模式 / View mode: {args.view} | 排序 / Sort: {args.sort or '默认/Default'}")
@@ -168,9 +185,9 @@ def run_search(args):
         print("【预览前 10 条结果 / Preview of top 10 results】")
         output_results(entries[:10], fmt="table")
         
-        out_file = args.output or "results.ris"
+        out_file = args.output or default_out_file
         print(f"\n【自动导出 / Auto-export】正在将全部 {len(entries)} 条结果保存至 / Saving all {len(entries)} results to {out_file} ...")
-        output_results(entries, fmt="ris", output_file=out_file)
+        output_results(entries, fmt="json", output_file=out_file)
     else:
         output_results(entries, fmt=args.output_format, output_file=args.output)
 

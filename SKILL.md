@@ -1,6 +1,6 @@
 ---
 name: scopus-search
-description: Search academic literature, journals, authors, or DOIs using the Scopus API. Always trigger this skill when the user needs to find academic papers, conduct literature searches on Scopus, or export literature references in CSV/RIS format. Supports complex boolean queries, pagination, and automated data export via a CLI tool.
+description: Search academic literature, journals, authors, or DOIs using the Scopus API. Always trigger this skill when the user needs to find academic papers, conduct literature searches on Scopus, or export literature references in JSON/CSV/RIS format. Supports complex boolean queries, pagination, and automated data export via a CLI tool.
 ---
 
 # Scopus Literature Search Skill
@@ -50,7 +50,7 @@ uv run scripts/main.py search "TITLE-ABS-KEY(deep learning) AND PUBYEAR > 2020"
 
 ### 3. Data Export and Large-Scale Retrieval
 
-This tool features excellent data format export (supporting RIS and CSV) and automatic pagination handling (bypassing the single-page limit of 100 papers):
+This tool features excellent data format export (supporting JSON, RIS and CSV) and automatic pagination handling (bypassing the single-page limit of 100 papers):
 - Export terminal detailed results table to RIS format, which can be imported into EndNote/Zotero:
   ```powershell
   uv run scripts/main.py search "TITLE(neural network)" --format ris --output refs.ris
@@ -68,6 +68,7 @@ This tool features excellent data format export (supporting RIS and CSV) and aut
 - `query`: No prefix defaults to `TITLE-ABS-KEY` full-text match.
 - `--sort`, `-s`: Defaults to `-date` (descending by date). Can also be ascending, e.g., `+citedby-count` (ascending by citation count).
 - `--view`, `-v`: Defaults to `STANDARD`. To fetch abstracts, add `--view COMPLETE`.
+- `--output`, `-o`: If not provided in `auto` mode, the tool automatically generates a filename like `keyword_YYYYMMDD.json`.
 
 ## Agent Workflow Suggestions
 

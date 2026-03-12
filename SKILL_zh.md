@@ -1,6 +1,6 @@
 ---
 name: scopus-search
-description: 使用 Scopus API 搜索学术文献、期刊、作者或 DOI。当用户需要查找学术论文、在 Scopus 上进行文献检索，或需要导出文献的 CSV/RIS 格式时，请立刻并始终触发此技能。支持包含复杂布尔查询、分页和自动导出的命令行工具。
+description: 使用 Scopus API 搜索学术文献、期刊、作者或 DOI。当用户需要查找学术论文、在 Scopus 上进行文献检索，或需要导出文献的 JSON/CSV/RIS 格式时，请立刻并始终触发此技能。支持包含复杂布尔查询、分页和自动导出的命令行工具。
 ---
 
 # Scopus Literature Search (Scopus 文献搜索技能)
@@ -50,7 +50,7 @@ uv run scripts/main.py search "TITLE-ABS-KEY(deep learning) AND PUBYEAR > 2020"
 
 ### 3. 数据导出和大规模获取
 
-该工具具有优秀的数据格式导出（支持 RIS 以及 CSV）以及自动翻页能力（能绕过单页获取不超过 100 篇文献的限制）：
+该工具具有优秀的数据格式导出（支持 JSON、RIS 以及 CSV）以及自动翻页能力（能绕过单页获取不超过 100 篇文献的限制）：
 - 终端详细结果表格导出为可以导入 EndNote/Zotero 的 RIS 格式：
   ```powershell
   uv run scripts/main.py search "TITLE(neural network)" --format ris --output refs.ris
@@ -68,6 +68,7 @@ uv run scripts/main.py search "TITLE-ABS-KEY(deep learning) AND PUBYEAR > 2020"
 - `query`：无前缀则默认为 `TITLE-ABS-KEY` 全文匹配。
 - `--sort`, `-s`：默认为 `-date`（按日期降序），也可设置为升降序如 `+citedby-count`（按被引用量升序排）。
 - `--view`, `-v`：默认 `STANDARD`。需拉取摘要，加上 `--view COMPLETE`。
+- `--output`, `-o`：在 `auto` 模式下若未提供，工具会自动生成如 `关键词_年月日.json` 的文件名。
 
 ## Agent 工作流建议
 

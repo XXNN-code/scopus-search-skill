@@ -104,8 +104,8 @@ Run `uv run scripts/main.py search --help` to view complete help information.
 - `--max-results`, `-m`: Maximum results to fetch, program will auto-paginate (`default 50`, e.g., set to 200 to fetch more).
 
 **Output Options**:
-- `--format`, `-f`: Output format. **Default `auto`** (previews first 10 results in terminal, and exports full results as an RIS file). Options: `table` (pure terminal table), `detail` (pure terminal detailed text), `csv`, or `ris` (export file only without terminal preview).
-- `--output`, `-o`: Export file path. If not specified in `auto` mode, it saves as `results.ris` in the current directory by default.
+- `--format`, `-f`: Output format. **Default `auto`** (previews first 10 results in terminal, and exports full results as a JSON file). Options: `table` (pure terminal table), `detail` (pure terminal detailed text), `csv`, `ris`, or `json` (export file only without terminal preview).
+- `--output`, `-o`: Export file path. If not specified in `auto` mode, it defaults to a filename based on the search term and date, e.g., `keyword_20260312.json`.
 
 ### Scopus Search Syntax Reference (Boolean Query)
 

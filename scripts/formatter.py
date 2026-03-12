@@ -3,6 +3,7 @@
 import csv
 import io
 import sys
+import json
 
 
 # Scopus 文献类型 -> RIS 文献类型映射
@@ -287,6 +288,15 @@ def format_ris(entries: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def format_json(entries: list[dict]) -> str:
+    """
+    格式化为 JSON 格式。 / Format into JSON format.
+    """
+    if not entries:
+        return "[]"
+    return json.dumps(entries, ensure_ascii=False, indent=2)
+
+
 def output_results(
     entries: list[dict],
     fmt: str = "table",
@@ -305,6 +315,7 @@ def output_results(
         "detail": format_detail,
         "csv": format_csv,
         "ris": format_ris,
+        "json": format_json,
     }
 
     formatter = formatters.get(fmt)

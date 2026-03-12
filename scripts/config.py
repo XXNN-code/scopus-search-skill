@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Load .env file (try loading from current working directory and script directory)
 base_dir = os.path.dirname(os.path.abspath(__file__))
 load_dotenv()  # 先从项目根目录（运行目录）加载 / Load from project root (runtime directory) first
-load_dotenv(os.path.join(base_dir, ".env"))  # 再尝试从脚本目录加载 / Then try loading from script directory
+load_dotenv(os.path.join(base_dir, ".env"))  # 再尝试 from 脚本目录加载 / Then try loading from script directory
 
 # Scopus API 配置 / Scopus API Configuration
 SCOPUS_API_KEY = os.getenv("SCOPUS_API_KEY", "").strip()

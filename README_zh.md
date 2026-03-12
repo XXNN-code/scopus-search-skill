@@ -104,8 +104,8 @@ uv run scripts/main.py search --keyword "large language model" --sort "-date" --
 - `--max-results`, `-m`: 最大获取结果数，程序会自动分页拉取数据（**默认 50**，例如设置 `--max-results 200` 拉取更多）。
 
 **输出选项**：
-- `--format`, `-f`: 输出格式。**默认 `auto`**（在终端预览前 10 条结果的表格，同时将完整结果导出为 RIS 文件）。也可选择 `table`（纯终端表格）、`detail`（纯终端详细）、`csv` 或 `ris`（仅导出文件而不预览）。
-- `--output`, `-o`: 导出文件的路径。若在 `auto` 模式下不指定，默认会保存为当前目录的 `results.ris`。
+- `--format`, `-f`: 输出格式。**默认 `auto`**（在终端预览前 10 条结果的表格，同时将完整结果导出为 JSON 文件）。也可选择 `table`（纯终端表格）、`detail`（纯终端详细）、`csv`、`ris` 或 `json`（仅导出文件而不预览）。
+- `--output`, `-o`: 导出文件的路径。若在 `auto` 模式下不指定，默认会根据搜索词和日期自动生成文件名，如 `搜索词_20260312.json`。
 
 ### Scopus 搜索语法参考 (Boolean 查询)
 
